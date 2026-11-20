@@ -1,0 +1,10 @@
+Django>=5.2,<5.3
+djangorestframework>=3.16,<4
+Pillow>=11
+pypdf>=5
+pypdfium2>=4.30
+python-dotenv>=1.0
+dj-database-url>=2.2
+whitenoise>=6.7
+gunicorn>=23
+psycopg[binary]>=3.2

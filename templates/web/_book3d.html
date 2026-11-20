@@ -1,0 +1,17 @@
+<div class="book-shadow" aria-hidden="true"></div>
+<div class="lift" aria-hidden="true">
+  <div class="float">
+    <div class="book3d">
+      <div class="face face-title">
+        <div class="face-title-name">{{ book.title }}</div>
+        <div class="face-title-lines"></div>
+      </div>
+      <div class="face face-front"><img src="{{ book.cover.url }}" alt=""></div>
+      <div class="face face-back">{% if book.back_cover %}<img src="{{ book.back_cover.url }}" alt="" loading="lazy">{% endif %}</div>
+      <div class="face face-spine"><span>{{ book.title }}</span></div>
+      <div class="face face-edge"></div>
+      <div class="face face-top"></div>
+      <div class="face face-bottom"></div>
+    </div>
+  </div>
+</div>

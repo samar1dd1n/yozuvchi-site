@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Fikrlar — {{ site_author.full_name|default:"Muallif" }}{% endblock %}
+
+{% block content %}
+<div class="stack" style="--gap: 56px">
+
+  <section class="stack" style="--gap: 16px">
+    <div class="eyebrow">Muallifdan</div>
+    <h1 class="display" style="font-size: clamp(48px, 6vw, 88px)">Fikrlar</h1>
+    <p class="prose">Yangiliklar, maqolalar va rasmlar.</p>
+    <nav class="filters" aria-label="Turi bo'yicha saralash">
+      {% for value, label in filters %}
+        <a class="chip" href="{% url 'web:posts' %}{% if value %}?tur={{ value }}{% endif %}"{% if value == kind %} aria-current="page"{% endif %}>{{ label }}</a>
+      {% endfor %}
+    </nav>
+  </section>
+
+  {% if not featured and not items %}
+    <p class="empty">Hozircha bu bo'limda post yo'q.</p>
+  {% endif %}
+
+  {% if featured %}
+  <article class="post-featured">
+    {% if featured.image %}
+    <a href="{{ featured.get_absolute_url }}" class="post-image" tabindex="-1" aria-hidden="true">
+      <img src="{{ featured.image.url }}" alt="">
+    </a>
+    {% endif %}
+    <div class="post-body">
+      <div class="post-meta">
+        <span class="post-kind">{{ featured.get_kind_display }}</span>
+        <time class="post-date" datetime="{{ featured.published_at|date:'c' }}">{{ featured.published_at|date:"d.m.Y" }}</time>
+      </div>
+      <h2><a href="{{ featured.get_absolute_url }}">{{ featured.title }}</a></h2>
+      {% if featured.summary %}<p class="prose" style="margin: 0">{{ featured.summary }}</p>{% endif %}
+      <a class="read-more" href="{{ featured.get_absolute_url }}">O'qish {% include "web/_icon_arrow.html" %}</a>
+    </div>
+  </article>
+  {% endif %}
+
+  {% if items %}
+  <div class="post-grid">
+    {% for post in items %}
+    <article class="post-card">
+      {% if post.image %}
+      <a href="{{ post.get_absolute_url }}" class="post-image" tabindex="-1" aria-hidden="true">
+        <img src="{{ post.image.url }}" alt="" loading="lazy">
+      </a>
+      {% endif %}
+      <div class="post-meta">
+        <span class="post-kind">{{ post.get_kind_display }}</span>
+        <time class="post-date" datetime="{{ post.published_at|date:'c' }}">{{ post.published_at|date:"d.m.Y" }}</time>
+      </div>
+      <h3><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h3>
+      {% if post.summary %}<p>{{ post.summary|truncatechars:180 }}</p>{% endif %}
+    </article>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if page_obj.paginator.num_pages > 1 %}
+  <nav class="pagination" aria-label="Sahifalar">
+    {% for number in page_obj.paginator.page_range %}
+      {% if number == page_obj.number %}
+        <span aria-current="page">{{ number }}</span>
+      {% else %}
+        <a href="?{% if kind %}tur={{ kind }}&amp;{% endif %}sahifa={{ number }}">{{ number }}</a>
+      {% endif %}
+    {% endfor %}
+  </nav>
+  {% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} — {{ site_author.full_name|default:"Muallif" }}{% endblock %}
+{% block description %}{{ post.summary|truncatechars:160 }}{% endblock %}
+
+{% block content %}
+<div class="stack" style="--gap: 72px">
+
+  <article class="article">
+    <a class="back-link" href="{% url 'web:posts' %}">← Barcha fikrlar</a>
+    <div class="post-meta">
+      <span class="post-kind">{{ post.get_kind_display }}</span>
+      <time class="post-date" datetime="{{ post.published_at|date:'c' }}">{{ post.published_at|date:"d.m.Y" }}</time>
+      {% if not post.is_live %}<span class="post-date">· saytda hali ko'rinmaydi</span>{% endif %}
+    </div>
+    <h1>{{ post.title }}</h1>
+    {% if post.image %}
+      <figure class="post-image" style="margin: 0"><img src="{{ post.image.url }}" alt="{{ post.title }}"></figure>
+    {% endif %}
+    {% if post.body %}
+      <div class="prose">{{ post.body|linebreaks }}</div>
+    {% elif post.excerpt %}
+      <p class="prose">{{ post.excerpt }}</p>
+    {% endif %}
+  </article>
+
+  {% if recent %}
+  <section class="stack" style="--gap: 24px">
+    <h2 class="h2">Boshqa fikrlar</h2>
+    <div class="post-grid">
+      {% for item in recent %}
+      <article class="post-card">
+        {% if item.image %}
+        <a href="{{ item.get_absolute_url }}" class="post-image" tabindex="-1" aria-hidden="true">
+          <img src="{{ item.image.url }}" alt="" loading="lazy">
+        </a>
+        {% endif %}
+        <div class="post-meta">
+          <span class="post-kind">{{ item.get_kind_display }}</span>
+          <time class="post-date" datetime="{{ item.published_at|date:'c' }}">{{ item.published_at|date:"d.m.Y" }}</time>
+        </div>
+        <h3><a href="{{ item.get_absolute_url }}">{{ item.title }}</a></h3>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+</div>
+{% endblock %}

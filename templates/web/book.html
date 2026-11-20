@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% if book %}{{ book.title }} — {% endif %}{{ site_author.full_name|default:"Muallif" }}{% endblock %}
+{% block description %}{% if book %}{{ book.annotation|truncatechars:160 }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+
+{% block scripts %}<script src="{% static 'js/book.js' %}" defer></script>{% endblock %}
+
+{% block content %}
+{% if not book %}
+<section class="stack" style="--gap: 24px">
+  <div class="eyebrow">Ilmiy kitob</div>
+  <h1 class="display book-title">Kitob tez orada</h1>
+  <p class="prose">Muallif kitobni hali joylamagan.</p>
+</section>
+{% else %}
+<div class="stack" style="--gap: 80px">
+
+  <section class="book-hero">
+    <div class="hero-text" style="gap: 24px">
+      <div class="eyebrow">Ilmiy kitob{% if not book.is_published %} · yashirin, faqat sizga ko'rinadi{% endif %}</div>
+      <h1 class="display book-title">{{ book.title }}</h1>
+      {% if book.annotation %}<div class="prose">{{ book.annotation|linebreaks }}</div>{% endif %}
+      <div class="actions">
+        {% if pdf_url %}
+          <a class="btn" href="{{ pdf_url }}" target="_blank" rel="noopener">PDF formatda ochish {% include "web/_icon_file.html" %}</a>
+          <span class="hint">Kitobga bosing — PDF ochiladi</span>
+        {% else %}
+          <span class="hint">Hali birorta sahifa ochilmagan.{% if overview.next_page %} Birinchi sahifa {{ overview.next_page.publish_at|date:"d.m.Y" }} kuni ochiladi.{% endif %}</span>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if pdf_url %}
+      <a class="stage" href="{{ pdf_url }}" target="_blank" rel="noopener" style="{{ stage_style }}" aria-label="«{{ book.title }}» kitobini PDF formatda ochish">
+        {% include "web/_book3d.html" %}
+      </a>
+    {% else %}
+      <div class="stage" style="{{ stage_style }}">
+        {% include "web/_book3d.html" %}
+      </div>
+    {% endif %}
+  </section>
+
+  <section class="pages" aria-labelledby="pages-title">
+    <div class="section-head">
+      <h2 class="h2" id="pages-title">Sahifalar</h2>
+      {% if overview.total %}
+      <span class="hint">{{ overview.open_count }} / {{ overview.total }} sahifa ochilgan{% if overview.next_page %} · keyingisi {{ overview.next_page.publish_at|date:"d.m.Y" }}{% endif %}</span>
+      {% endif %}
+    </div>
+
+    {% if overview.total %}
+      <div class="page-grid">
+        {% for page in overview.opened %}
+        <div class="page-card">
+          <a class="page-thumb{% if not page.thumbnail %} is-file{% endif %}" href="{{ page.file.url }}" target="_blank" rel="noopener" aria-label="{{ page.number }}-sahifani ochish">
+            {% if page.thumbnail %}
+              <img src="{{ page.thumbnail.url }}" alt="" loading="lazy">
+            {% else %}
+              {% include "web/_icon_file.html" with size=40 stroke=1.4 %}
+            {% endif %}
+          </a>
+          <div class="page-meta"><strong>{{ page.number }}-sahifa</strong><span>{{ page.publish_at|date:"d.m.Y" }}</span></div>
+        </div>
+        {% endfor %}
+
+        {% for page in overview.locked_preview %}
+        <div class="page-card">
+          <div class="page-lock">{% include "web/_icon_lock.html" %}</div>
+          <div class="page-meta"><strong>{{ page.number }}-sahifa</strong><span>{{ page.publish_at|date:"d.m.Y" }} ochiladi</span></div>
+        </div>
+        {% endfor %}
+      </div>
+      {% if overview.locked_rest %}<p class="hint">Yana {{ overview.locked_rest }} ta sahifa navbatda.</p>{% endif %}
+    {% else %}
+      <p class="empty">Sahifalar hali yuklanmagan.</p>
+    {% endif %}
+  </section>
+
+  {% if other_books %}
+  <section class="pages" aria-labelledby="other-books-title">
+    <div class="section-head"><h2 class="h2" id="other-books-title">Boshqa kitoblar</h2></div>
+    <div class="page-grid">
+      {% for item in other_books %}
+      <a class="page-card" href="{% url 'web:book-detail' item.slug %}">
+        <span class="page-thumb"><img src="{{ item.cover.url }}" alt="" loading="lazy"></span>
+        <span class="page-meta"><strong>{{ item.title }}</strong></span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,40 @@
+{% load static %}<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ site_author.full_name|default:"Muallif" }}{% endblock %}</title>
+  <meta name="description" content="{% block description %}{{ site_author.tagline }}{% endblock %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+<div class="page">
+  <header class="site-header container">
+    <a class="brand" href="{% url 'web:home' %}">{{ site_author.full_name|default:"Muallif" }}</a>
+    {% with current=request.resolver_match.url_name %}
+    <nav class="site-nav" aria-label="Asosiy menyu">
+      <a href="{% url 'web:home' %}"{% if current == "home" %} aria-current="page"{% endif %}>Muallif</a>
+      <a href="{% url 'web:book' %}"{% if current == "book" or current == "book-detail" %} aria-current="page"{% endif %}>Kitob</a>
+      <a href="{% url 'web:posts' %}"{% if current == "posts" or current == "post-detail" %} aria-current="page"{% endif %}>Fikrlar</a>
+    </nav>
+    {% endwith %}
+  </header>
+
+  <main class="site-main container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>© {% now "Y" %} {{ site_author.full_name|default:"Muallif" }}</span>
+      <span>Barcha huquqlar himoyalangan</span>
+    </div>
+  </footer>
+</div>
+{% block scripts %}{% endblock %}
+</body>
+</html>
